@@ -94,26 +94,34 @@ class LoginManager {
      * @param s the socket to use
      */
     private void handleSocket(Socket s) {
+        String received = null;
         try {
             InputStream is = s.getInputStream();
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             int b;
             while (true) {
+                if (buffer.toString().endsWith(Server.$_EOM_$)) {
+                    received = buffer.toString(StandardCharsets.UTF_8).substring(0, buffer.toString(StandardCharsets.UTF_8).indexOf(Server.$_EOM_$));
+                    break;
+                }
                 b = is.read();
-                if (b == 0) break; // message completely read
-                else if (b == -1) return; // stream ended
-                else buffer.write(b);
+                if (b == 0 ) {
+                    received = buffer.toString(StandardCharsets.UTF_8);
+                    break; // message completely read
+                } else if (b == -1) {
+                    return; // stream ended
+                }
+                else
+                    buffer.write(b);
             }
-
-            String received = buffer.toString(StandardCharsets.UTF_8);
             JSONObject json = null;
             try {
                 json = new JSONObject(received);
             } catch(JSONException e){
-                Log.log(Log.Level.ERROR, "Invalid JSON object received: " + received);
+                Log.log(Log.Level.ERROR, "Invalid JSON object received: " + received + " ("+is.hashCode()+")");
             }
             Message msg = Message.buildFromJson(json);
-
+            System.out.println("LM: message reseived " + received);
             if(msg != null){
                 if(msg instanceof AuthRequestMessage) {
                     AuthRequestMessage auth = (AuthRequestMessage) msg;

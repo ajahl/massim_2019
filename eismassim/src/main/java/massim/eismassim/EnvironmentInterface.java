@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 /**
  * Environment interface to the MASSim server following the Environment Interface Standard (EIS).
  */
-public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
+public class EnvironmentInterface extends EIDefaultImpl implements Runnable {
 
     private Set<String> supportedActions = new HashSet<>();
     private Map<String, EISEntity> entities = new HashMap<>();

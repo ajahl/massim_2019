@@ -27,6 +27,8 @@ import java.util.stream.IntStream;
  */
 public class Server {
 
+    public static final String $_EOM_$ = "$EOM$";
+
     private ServerConfig config;
 
     private final InputManager inputManager = new InputManager();
