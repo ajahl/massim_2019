@@ -101,19 +101,20 @@ public class Server {
                 for (int i = 0; i < confFiles.length; i++) {
                     Log.log(Log.Level.NORMAL, i + " " + confFiles[i]);
                 }
-                Scanner in = new Scanner(System.in);
-                Integer confNum = null;
-                while (confNum == null) {
-                    try {
-                        confNum = Integer.parseInt(in.next());
-                        if (confNum < 0 || confNum > confFiles.length - 1){
-                            Log.log(Log.Level.NORMAL, "No massim.config for that number, try again:");
-                            confNum = null;
-                        }
-                    } catch (Exception e) {
-                        Log.log(Log.Level.NORMAL, "Invalid number, try again:");
-                    }
-                }
+                Integer confNum = 0;
+//                Scanner in = new Scanner(System.in);
+//                Integer confNum = null;
+//                while (confNum == null) {
+//                    try {
+//                        confNum = Integer.parseInt(in.next());
+//                        if (confNum < 0 || confNum > confFiles.length - 1){
+//                            Log.log(Log.Level.NORMAL, "No massim.config for that number, try again:");
+//                            confNum = null;
+//                        }
+//                    } catch (Exception e) {
+//                        Log.log(Log.Level.NORMAL, "Invalid number, try again:");
+//                    }
+//                }
                 try {
                     server.config = parseServerConfig(IOUtil.readJSONObjectWithImport(confFiles[confNum].getPath()));
                 } catch (IOException e) {
@@ -168,7 +169,7 @@ public class Server {
             loginManager = new LoginManager(agentManager, config.port, config.backlog);
             loginManager.start();
         } catch (IOException e) {
-            Log.log(Log.Level.CRITICAL, "Cannot open server socket.");
+            Log.log(Log.Level.CRITICAL, "Cannot open server socket. " + config.port);
             return;
         }
 

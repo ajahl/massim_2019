@@ -20,14 +20,24 @@ public class BasicAgent extends Agent {
     }
 
     @Override
-    public void handlePercept(Percept percept) {}
+    public void handlePercept(Percept percept) {
+        System.err.println("handlePercept:  " + percept.getName());
+    }
 
     @Override
-    public void handleMessage(Percept message, String sender) {}
+    public void handleMessage(Percept message, String sender) {
+        System.err.println(sender + ":  " + message.getName());
+    }
 
     @Override
     public Action step() {
         List<Percept> percepts = getPercepts();
+        System.err.println("AGENT " + this.getName() + " ---------------------------------------");
+        System.err.println("step:  " + percepts.size());
+        for (Percept p:percepts) {
+            System.err.println("  " + p.getName() + "  " + p.getParameters());
+        }
+
         percepts.stream()
                 .filter(p -> p.getName().equals("step"))
                 .findAny()

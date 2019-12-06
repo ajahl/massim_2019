@@ -42,11 +42,14 @@ class LoginManager {
             while (!stopped) {
                 try {
                     Log.log(Log.Level.DEBUG, "Waiting for connection...");
+                    System.out.println("LM: Waiting for connection...");
                     Socket s = serverSocket.accept();
+                    System.out.println("LM: Got a connection");
                     Log.log(Log.Level.DEBUG,"Got a connection.");
                     Thread t = new Thread(() -> handleSocket(s));
                     t.start();
                 } catch (IOException e) {
+                    System.out.println("LM: Stop listening");
                     Log.log(Log.Level.DEBUG,"Stop listening");
                 }
             }
@@ -81,7 +84,7 @@ class LoginManager {
         try {
             OutputStream out = s.getOutputStream();
             AuthResponseMessage msg = new AuthResponseMessage(System.currentTimeMillis(), result);
-            out.write(msg.toJson().toString().getBytes());
+            out.write((msg.toJson().toString()+ Server.$_EOM_$).getBytes());
             out.write(0);
         } catch (IOException e) {
             Log.log(Log.Level.CRITICAL, "Auth response could not be sent.");
@@ -94,6 +97,7 @@ class LoginManager {
      * @param s the socket to use
      */
     private void handleSocket(Socket s) {
+        System.out.println("LM: handle event " + s.toString());
         String received = null;
         try {
             InputStream is = s.getInputStream();

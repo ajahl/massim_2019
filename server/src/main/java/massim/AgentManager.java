@@ -63,6 +63,7 @@ class AgentManager {
      * @param agentName the name of the agent
      */
     void handleNewConnection(Socket s, String agentName){
+        System.out.println("AM: new connection " + s.toString());
         if (agents.containsKey(agentName)) agents.get(agentName).handleNewConnection(s);
     }
 
@@ -231,6 +232,7 @@ class AgentManager {
          * {@link #maxPacketLength}, the read bytes are immediately discarded until the next 0 byte.
          */
         private void receive() {
+            System.out.println("AM: receive ");
             InputStream in;
             try {
                 in = new BufferedInputStream(socket.getInputStream());
@@ -241,6 +243,13 @@ class AgentManager {
                     var b = in.read();
                     if (!skipping && b != 0) buffer.write(b);
                     if(b == -1) break; // stream ended
+                    if (buffer.toString().endsWith(Server.$_EOM_$)) { // TODO: remove $EOM$ and b = 0, move to other if
+                        JSONObject json = new JSONObject(new String(buffer.toByteArray()));
+                        System.out.println("AM: json " + json.toString());
+                        handleReceivedMessage(json);
+                        buffer = new ByteArrayOutputStream();
+                        readBytes = 0;
+                    }
                     if (b == 0){
                         if (skipping){
                             skipping = false; // new packet next up
@@ -248,6 +257,7 @@ class AgentManager {
                         else {
                             // json object complete
                             JSONObject json = new JSONObject(new String(buffer.toByteArray()));
+                            System.out.println("AM: json " + json.toString());
                             handleReceivedMessage(json);
                             buffer = new ByteArrayOutputStream();
                             readBytes = 0;
@@ -260,6 +270,7 @@ class AgentManager {
                     }
                 }
             } catch (IOException | JSONException e) {
+                System.out.println("AM: Error receiving json object.");
                 Log.log(Log.Level.ERROR, "Error receiving json object. Stop receiving.");
             }
         }
@@ -299,7 +310,8 @@ class AgentManager {
                 try {
                     var osw = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
                     var msg = sendQueue.take();
-                    osw.write(msg.toString());
+                    osw.write(msg.toString() + Server.$_EOM_$);
+                    System.out.println("AM: send  "+ socket.toString() + "   " + msg.toString() );
                     osw.write(0);
                     osw.flush();
                 } catch (IOException | InterruptedException e){

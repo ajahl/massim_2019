@@ -14,6 +14,7 @@ public class Main {
 
     public static void main( String[] args ) {
 
+        args = new String[]{"javaagents/conf/BasicAgents"};
         String configDir = "";
 
         System.out.println("PHASE 1: INSTANTIATING SCHEDULER");
